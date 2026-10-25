@@ -1,0 +1,30 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>R48 auth</title></head><body>
+<h3 id="st">R48 auth test</h3><script>
+(function(){
+  function send(tag,d){try{document.getElementById('st').textContent=tag+' '+String(d).substring(0,200);}catch(e){}}
+  if(!window.ToutiaoJSBridge){send('nobridge','');return;}
+  var orig=window.ToutiaoJSBridge._handleMessageFromToutiao;
+  window.ToutiaoJSBridge._handleMessageFromToutiao=function(s){
+    var t=(typeof s==='string')?s:JSON.stringify(s);
+    send('resp', t.substring(0,600));
+    try{if(orig)orig.call(window.ToutiaoJSBridge,s);}catch(e){}
+  };
+  function fire(id, params){
+    var msg={__msg_type:'call',__callback_id:id,func:'jumpOpenAuthPage',params:params,
+             JSSDK:'5.2.30',namespace:'',__iframe_url:'',permissionGroup:'private',
+             token:'a-'+Date.now()};
+    window.ToutiaoJSBridge.invokeMethod(JSON.stringify(msg));
+    var f=document.getElementById('__JSBridgeIframe__')||document.createElement('iframe');
+    f.id='__JSBridgeIframe__';f.style.display='none';document.documentElement.appendChild(f);
+    f.src='bytedance://dispatch_message/';
+    send('fired', id);
+  }
+  // A: dummy client_key, basic scope
+  setTimeout(function(){ fire('auth_a', {client_key:'r48dummykey0000', scope:'user.info.basic', state:'r48a'}); }, 2000);
+  // B: dummy + get_status_only (no UI path)
+  setTimeout(function(){ fire('auth_b', {client_key:'r48dummykey0000', scope:'user.info.basic', state:'r48b', get_status_only:true}); }, 9000);
+  // C: real well-known first-party client_key (tiktok web) for comparison — tiktok's own web client key
+  setTimeout(function(){ fire('auth_c', {client_key:'awdc6vr5bhpcjpev', scope:'user.info.basic', state:'r48c'}); }, 16000);
+})();
+</script></body></html>
